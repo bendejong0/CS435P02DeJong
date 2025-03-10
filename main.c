@@ -27,6 +27,37 @@ int parse() {
 	}
 }
 
+void F()
+{
+	if (currentToken == IDENT) scan();
+	else if (currentToken == LEFT_P_TOK) {
+		scan();
+		E();
+		if (currentToken == RIGHT_P_TOK)
+			scan();
+	}
+	else syntax_error("Missing Right Parenthesis");
+}
+else syntax_error("Missing Expression symbol");
+}
+
+
+void E()
+{
+	T(); while (currentToken == PLUS_TOK) {
+		scan();
+		T();
+	}
+}
+
+void T()
+{
+	F(); while (currentToken == STAR_TOK) {
+		scan();
+		F();
+	}
+}
+
 void main() {
 
 	if (parse() == 0) {
