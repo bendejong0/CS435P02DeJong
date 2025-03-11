@@ -26,7 +26,7 @@ enum tokenType scan()
 		return SCAN_EOF;
 	}
 	while ((currentCh = fgetc(src)) != EOF) {
-		if (currentCh == ";") {
+		if (currentCh == ';') {
 			return SEMICOLON;
 		}
 		else if (currentCh == '+') {
@@ -112,6 +112,7 @@ enum tokenType scan()
 	}
 	return SCAN_EOF;
 }
+
 /*
 int main(int argc, char* argv[])
 {

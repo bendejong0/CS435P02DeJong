@@ -9,6 +9,14 @@ enum tokenType currentToken;
 // if its not an expected token then blow up
 // otherwise yoink another token
 
+void expression();
+void term();
+void factor();
+void read();
+void write();
+void match(enum tokenType expected);
+extern unsigned numErrs;
+
 void expression() {
 	//expressions are made of sums of terms
 	term();
@@ -93,12 +101,13 @@ void statement() {
 		parse_error("Invalid statement", mnemonic[currentToken]);
 	}
 }
-
 void main(int argc, char* argv[]) {
+
+	extern FILE* src;
 	
 	if (argc > 1) {
 		if (fopen_s(&src, argv[1], "r")) {
-			fprintf(stderr, "Error opening source file: %s", argv[1]);
+			fprintf(stderr, "Error opening source file: %s ", argv[1]);
 			exit(1);
 		}
 	}
@@ -109,5 +118,7 @@ void main(int argc, char* argv[]) {
 		currentToken = scan();
 		match(SEMICOLON);
 	}
+
+	fclose(src);
 
 }
