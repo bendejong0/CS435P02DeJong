@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "scanner.c"
-tokenType currentToken;
+enum tokenType currentToken;
 
 // run the scanner on the thing
 // get an initial token
@@ -12,25 +12,50 @@ tokenType currentToken;
 void expression() {
 	//expressions are made of sums of terms
 	term();
+	while (currentToken == PLUS || currentToken == MINUS) {
+		currentToken = scan();
+		term();
+	}
 	
 }
 
 void term() {
 	// terms are made of prodcts of factors
 	factor();
+	while(currentToken == TIMES || currentToken == DIV){
+		currentToken = scan();
+		factor();
+	}
 
+}
+
+void read() {
+	currentToken = scan();
+	match(LPAREN);
+	expression();
+	currentToken = scan();
+	match(RPAREN);
+}
+
+void write() {
+	currentToken = scan();
+	match(LPAREN);
+	expression();
+	currentToken = scan();
+	match(RPAREN);
 }
 
 void factor() {
 	// yoink a first token
 	currentToken = scan();
-	if (currentToken == tokenType::ID) {
+	if (currentToken == ID || currentToken == NUMBER) {
 		return;
 	}
-	if (currentToken == tokenType::NUMBER) {
-		return;
+	else if (currentToken == LPAREN) {
+		expression();
+		currentToken = scan();
+		match(RPAREN);
 	}
-	if(currentToken == )
 
 }
 
@@ -39,6 +64,7 @@ void parse_error(char* errMsg, char* lexeme) {
 	numErrs++;
 	fprintf(stderr, "%s: %s\n", errMsg, lexeme);
 }
+
 void match(enum tokenType expected)
 {
 	if (currentToken == expected) {
@@ -50,28 +76,38 @@ void match(enum tokenType expected)
 	}
 }
 
-int parse() {
-	
+
+void statement() {
+	if (currentToken == ID) {
+		currentToken = scan();
+		match(ASSIGN);
+		expression();
+	}
+	else if (currentToken == READ) {
+		read();
+	}
+	else if (currentToken == WRITE) {
+		write();
+	}
+	else{
+		parse_error("Invalid statement", mnemonic[currentToken]);
+	}
 }
 
-
 void main(int argc, char* argv[]) {
-
-	while (currentToken = scan()) {
-		if (currentToken == tokenType::ID) {
-			currentToken = scan();
-			// 
-			match(tokenType::ASSIGN);
-			// then call expression
-			expression();
-
+	
+	if (argc > 1) {
+		if (fopen_s(&src, argv[1], "r")) {
+			fprintf(stderr, "Error opening source file: %s", argv[1]);
+			exit(1);
 		}
-		else if (currentToken == tokenType::READ) {
+	}
 
-		}
-		else if (currentToken == tokenType::WRITE) {
-
-		}
+	while ((currentToken = scan()) != SCAN_EOF) {
+		statement();
+		// make sure the last thing is a semicolon
+		currentToken = scan();
+		match(SEMICOLON);
 	}
 
 }

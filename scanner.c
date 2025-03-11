@@ -112,3 +112,28 @@ enum tokenType scan()
 	}
 	return SCAN_EOF;
 }
+/*
+int main(int argc, char* argv[])
+{
+	extern FILE* src;
+	enum tokenType currentToken;
+	if (argc > 1) {//should be better testing for proper number of arguments, but not required for this project
+		if (fopen_s(&src, argv[1], "r")) {
+			fprintf(stderr, "Error opening source file: %s ", argv[1]);
+			exit(1);
+		}
+	}
+	while ((currentToken = scan()) != SCAN_EOF) {
+		//finish body for displaying the string version of the internal token name and
+		//also print lexeme if the token is a ID or NUMBER. Do not print lexeme for the other tokens.
+		if (currentToken == NUMBER || currentToken == ID) {
+			printf("%s, %s\n", mnemonic[currentToken], lexeme);
+		}
+		else {
+			printf("%s\n", mnemonic[currentToken]);
+		}
+	}
+	fclose(src);
+	return 0;
+} //end driver
+*/
