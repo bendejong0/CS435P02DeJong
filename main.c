@@ -1,8 +1,38 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "scanner.c"
-enum tokenType currentToken;
-FILE* src;
+tokenType currentToken;
+
+// run the scanner on the thing
+// get an initial token
+// use if else logic to match expected tokens with stuff
+// if its not an expected token then blow up
+// otherwise yoink another token
+
+void expression() {
+	//expressions are made of sums of terms
+	term();
+	
+}
+
+void term() {
+	// terms are made of prodcts of factors
+	factor();
+
+}
+
+void factor() {
+	// yoink a first token
+	currentToken = scan();
+	if (currentToken == tokenType::ID) {
+		return;
+	}
+	if (currentToken == tokenType::NUMBER) {
+		return;
+	}
+	if(currentToken == )
+
+}
 
 void parse_error(char* errMsg, char* lexeme) {
 	extern unsigned numErrs; //for future if error recovery used
@@ -21,47 +51,27 @@ void match(enum tokenType expected)
 }
 
 int parse() {
-	scan(); E();
-	if (currentToken != EOK_TOK) {
-		parse_error("Unexpected end of input", );
-	}
-}
-
-void F()
-{
-	if (currentToken == IDENT) scan();
-	else if (currentToken == LEFT_P_TOK) {
-		scan();
-		E();
-		if (currentToken == RIGHT_P_TOK)
-			scan();
-	}
-	else syntax_error("Missing Right Parenthesis");
-}
-else syntax_error("Missing Expression symbol");
+	
 }
 
 
-void E()
-{
-	T(); while (currentToken == PLUS_TOK) {
-		scan();
-		T();
-	}
-}
+void main(int argc, char* argv[]) {
 
-void T()
-{
-	F(); while (currentToken == STAR_TOK) {
-		scan();
-		F();
-	}
-}
+	while (currentToken = scan()) {
+		if (currentToken == tokenType::ID) {
+			currentToken = scan();
+			// 
+			match(tokenType::ASSIGN);
+			// then call expression
+			expression();
 
-void main() {
+		}
+		else if (currentToken == tokenType::READ) {
 
-	if (parse() == 0) {
+		}
+		else if (currentToken == tokenType::WRITE) {
 
+		}
 	}
 
 }
