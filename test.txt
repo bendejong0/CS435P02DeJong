@@ -1,0 +1,7 @@
+read(a, b);
+x := y;
+read(a, b, c);
+x := y+2*x+33;
+write(3*x+2*y+11);
+write(2*3*x*22+y+z*2*z);
+z := 9*9*9*x+z+z*z*x+x;

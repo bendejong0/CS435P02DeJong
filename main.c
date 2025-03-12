@@ -18,45 +18,38 @@ void match(enum tokenType expected);
 unsigned numErrs;
 
 void statement() {
-	printf("Entering statement\n");
 	if (currentToken == ID) {
-		printf("Got ID");
 		// it HAS to be Identifier followed by ASSIGN;
 		currentToken = scan();
 		match(ASSIGN);
 		expression();
-		match(SEMICOLON);
 	}
 	else if (currentToken == READ) {
 		read();
-		currentToken = scan();
-		match(SEMICOLON);
 	}
 	else if (currentToken == WRITE) {
 		write();
-		match(SEMICOLON);
 	}
 	else {
-		///parse_error("Invalid statement", mnemonic[currentToken]);
+		//parse_error("Invalid statement", mnemonic[currentToken]);
 	}
+	match(SEMICOLON);
 }
 
 void expression() {
-	printf("Entering expression\n");
 	//expressions are made of sums of terms
 	term();
 	while (currentToken == PLUS || currentToken == MINUS) {
-		scan();
+		currentToken = scan();
 		term();
 	}
 }
 
 void term() {
-	printf("Entering term\n");
 	// terms are made of prodcts of factors
 	factor();
 	// check for times or divide by scanning
-	while(currentToken == TIMES || currentToken == DIV){
+	while (currentToken == TIMES || currentToken == DIV) {
 		currentToken = scan();
 		factor();
 	}
@@ -64,7 +57,6 @@ void term() {
 }
 
 void factor() {
-	printf("Entering factor\n");
 	// yoink a first token
 	// current token is assign, but YUCK!
 	// so bring in the next one to compare it to the guys.
@@ -72,7 +64,7 @@ void factor() {
 		currentToken = scan();
 	}
 	else if (currentToken == LPAREN) {
-		scan();
+		currentToken = scan();
 		expression();
 		match(RPAREN);
 	}
@@ -81,8 +73,11 @@ void factor() {
 void read() {
 	currentToken = scan();
 	match(LPAREN);
-	expression();
-	currentToken = scan();
+	match(ID);
+	while (currentToken == COMMA) {
+		currentToken = scan();
+		match(ID);
+	}
 	match(RPAREN);
 }
 
@@ -90,7 +85,6 @@ void write() {
 	currentToken = scan();
 	match(LPAREN);
 	expression();
-	currentToken = scan();
 	match(RPAREN);
 }
 
@@ -120,17 +114,16 @@ void match(enum tokenType expected)
 void main(int argc, char* argv[]) {
 
 	extern FILE* src;
-	
+
 	if (argc > 1) {
 		if (fopen_s(&src, argv[1], "r")) {
 			fprintf(stderr, "Error opening source file: %s ", argv[1]);
 			exit(1);
 		}
 	}
-
-	while ((currentToken = scan()) != SCAN_EOF) {
+	currentToken = scan();
+	while (currentToken != SCAN_EOF) {
 		statement();
-		// make sure the last thing is a semicolon
 	}
 	printf("YIPPE!");
 
