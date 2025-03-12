@@ -15,26 +15,67 @@ void factor();
 void read();
 void write();
 void match(enum tokenType expected);
-extern unsigned numErrs;
+unsigned numErrs;
+
+void statement() {
+	printf("Entering statement\n");
+	if (currentToken == ID) {
+		printf("Got ID");
+		// it HAS to be Identifier followed by ASSIGN;
+		currentToken = scan();
+		match(ASSIGN);
+		expression();
+		match(SEMICOLON);
+	}
+	else if (currentToken == READ) {
+		read();
+		currentToken = scan();
+		match(SEMICOLON);
+	}
+	else if (currentToken == WRITE) {
+		write();
+		match(SEMICOLON);
+	}
+	else {
+		///parse_error("Invalid statement", mnemonic[currentToken]);
+	}
+}
 
 void expression() {
+	printf("Entering expression\n");
 	//expressions are made of sums of terms
 	term();
 	while (currentToken == PLUS || currentToken == MINUS) {
-		currentToken = scan();
+		scan();
 		term();
 	}
-	
 }
 
 void term() {
+	printf("Entering term\n");
 	// terms are made of prodcts of factors
 	factor();
+	// check for times or divide by scanning
 	while(currentToken == TIMES || currentToken == DIV){
 		currentToken = scan();
 		factor();
 	}
 
+}
+
+void factor() {
+	printf("Entering factor\n");
+	// yoink a first token
+	// current token is assign, but YUCK!
+	// so bring in the next one to compare it to the guys.
+	if (currentToken == ID || currentToken == NUMBER) {
+		currentToken = scan();
+	}
+	else if (currentToken == LPAREN) {
+		scan();
+		expression();
+		match(RPAREN);
+	}
 }
 
 void read() {
@@ -53,19 +94,7 @@ void write() {
 	match(RPAREN);
 }
 
-void factor() {
-	// yoink a first token
-	currentToken = scan();
-	if (currentToken == ID || currentToken == NUMBER) {
-		return;
-	}
-	else if (currentToken == LPAREN) {
-		expression();
-		currentToken = scan();
-		match(RPAREN);
-	}
 
-}
 
 void parse_error(char* errMsg, char* lexeme) {
 	extern unsigned numErrs; //for future if error recovery used
@@ -80,27 +109,14 @@ void match(enum tokenType expected)
 	}
 	else {
 		parse_error("Expected symbol", mnemonic[expected]);
+		printf("Actual: %s ", mnemonic[currentToken]);
 		exit(1);
 	}
 }
 
 
-void statement() {
-	if (currentToken == ID) {
-		currentToken = scan();
-		match(ASSIGN);
-		expression();
-	}
-	else if (currentToken == READ) {
-		read();
-	}
-	else if (currentToken == WRITE) {
-		write();
-	}
-	else{
-		parse_error("Invalid statement", mnemonic[currentToken]);
-	}
-}
+
+
 void main(int argc, char* argv[]) {
 
 	extern FILE* src;
@@ -115,9 +131,8 @@ void main(int argc, char* argv[]) {
 	while ((currentToken = scan()) != SCAN_EOF) {
 		statement();
 		// make sure the last thing is a semicolon
-		currentToken = scan();
-		match(SEMICOLON);
 	}
+	printf("YIPPE!");
 
 	fclose(src);
 
